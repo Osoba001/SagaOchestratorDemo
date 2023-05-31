@@ -6,7 +6,7 @@ using System.Text;
 
 var factory = new ConnectionFactory
 {
-    Uri = new Uri(""),
+    Uri = new Uri("amqp://guest:guest@localhost:5672"),
     ClientProvidedName="Notify app"
 };
 
