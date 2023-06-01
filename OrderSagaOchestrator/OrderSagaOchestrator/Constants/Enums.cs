@@ -4,9 +4,23 @@
     {
          public enum Actions
         {
-            CreateOrder, DeleteOder,UpdateInventoy,UndoUpdateInventory,NotifyUser
+            CreateOrder, 
+            DeleteOder,
+            UpdateInventory,
+            RolledBackInventory,
+            SendNotification
         }
-
-      
+        public enum TransactionState
+        {
+            NotStarted,
+            OrderCreated,
+            OrderCancelled,
+            OrderCreatedFailed,
+            InventoryUpdated,
+            InventoryUpdatedFailed,
+            InventoryRolledBack,
+            NotificationSent,
+            NotificationSendFailed
+        }
     }
 }
