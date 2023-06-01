@@ -34,16 +34,20 @@ namespace OrderSagaOchestrator.Manager
                 ).OnEntry(()=> machine.Fire(Actions.UpdateInventory));
 
             machine.Configure(TransactionState.InventoryUpdated)
-                .Permit(Actions.SendNotification, TransactionState.NotificationSent)
-                .OnEntry(()=>machine.Fire(Actions.SendNotification));
+                .PermitDynamic(Actions.SendNotification, () =>
+                {
+                    createOrder.SendNotication($"{order.Quantiy} order of {order.Name} made.");
+                    return TransactionState.NotificationSent;
+                });
+                
 
             machine.Configure(TransactionState.InventoryUpdatedFailed)
-               .Permit(Actions.SendNotification, TransactionState.NotificationSent)
+               .PermitDynamic(Actions.DeleteOder, () => {
+                   createOrder.DeleteOrder(order);
+                   return TransactionState.InventoryRolledBack;
+                   } 
+               )
                .OnEntry(() => machine.Fire(Actions.SendNotification));
-
-
-            return machine.State == TransactionState.NotificationSent;
-
 
         }
 
