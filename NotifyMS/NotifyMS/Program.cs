@@ -12,7 +12,7 @@ var factory = new ConnectionFactory
 
 var con= factory.CreateConnection();
 var model= con.CreateModel();
-string exhange = "order-exchange";
+string exhange = "order-created";
 string queue = "order-queue";
 string routingKey = "order-routingKey";
 model.ExchangeDeclare(exhange, ExchangeType.Direct);
