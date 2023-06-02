@@ -23,7 +23,6 @@ namespace OrderSagaOchestrator.Manager
 
             var invent = new Inventory
             {
-                Id = order.Id,
                 Quantity = order.Quantiy,
                 Name = order.Name,
                 ProductId = order.ProductId,
@@ -38,15 +37,21 @@ namespace OrderSagaOchestrator.Manager
                 {
                     createOrder.SendNotication($"{order.Quantiy} order of {order.Name} made.");
                     return TransactionState.NotificationSent;
-                });
+                }).OnEntry(()=> machine.Fire(Actions.SendNotification));
 
             machine.Configure(TransactionState.InventoryUpdatedFailed)
-               .PermitDynamic(Actions.DeleteOder, () =>
+               .PermitDynamic(Actions.RolledBackInventory, () =>
                {
-                   createOrder.DeleteOrder(order);
+                   createOrder.RolledBackInventoty(invent);
                    return TransactionState.InventoryRolledBack;
-               });
+               }).OnEntry(x=> machine.Fire(Actions.RolledBackInventory));
 
+            machine.Configure(TransactionState.InventoryRolledBack)
+              .PermitDynamic(Actions.DeleteOder, () =>
+              {
+                  createOrder.DeleteOrder(order);
+                  return TransactionState.OrderCancelled;
+              }).OnEntry(x => machine.Fire(Actions.DeleteOder));
 
             return machine.State == TransactionState.NotificationSent;
         }
